@@ -182,23 +182,23 @@ def flatten(argument):
 	return flat
 
 def frobenius_solve(left, right):
-	n = len(left)
+	n = len(right)
 	counts = [0]*n
 	total = 0
 	result = []
 	searching = True
 	while searching:
-		if total == right:
+		if total == left:
 			result.append(list(counts))
 		for i in range(n-1, -1, -1):
-			if total + left[i] <= right:
-				total += left[i]
+			if total + right[i] <= left:
+				total += right[i]
 				counts[i] += 1
 				break
 			if i == 0:
 				searching = False
 				break
-			total -= left[i]*counts[i]
+			total -= right[i]*counts[i]
 			counts[i] = 0
 	return result
 
@@ -1895,8 +1895,8 @@ atoms = {
 	),
 	'æF': attrdict(
 		arity = 2,
-		ldepth = 1,
-		rdepth = 0,
+		ldepth = 0,
+		rdepth = 1,
 		call = frobenius_solve
 	),
 	'æḟ': attrdict(
