@@ -181,6 +181,27 @@ def flatten(argument):
 		flat.append(argument)
 	return flat
 
+def frobenius_solve(left, right):
+	n = len(left)
+	counts = [0]*n
+	total = 0
+	result = []
+	searching = True
+	while searching:
+		if total == right:
+			result.append(list(counts))
+		for i in range(n-1, -1, -1):
+			if total + left[i] <= right:
+				total += left[i]
+				counts[i] += 1
+				break
+			if i == 0:
+				searching = False
+				break
+			total -= left[i]*counts[i]
+			counts[i] = 0
+	return result
+
 def from_base(digits, base):
 	integer = 0
 	for digit in digits:
@@ -1871,6 +1892,12 @@ atoms = {
 		ldepth = 0,
 		rdepth = 0,
 		call = lambda x, y: from_base([1] + [0] * len(to_base(x, y)), y)
+	),
+	'æF': attrdict(
+		arity = 2,
+		ldepth = 1,
+		rdepth = 0,
+		call = frobenius_solve
 	),
 	'æḟ': attrdict(
 		arity = 2,
