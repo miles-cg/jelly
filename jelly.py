@@ -202,6 +202,15 @@ def frobenius_solve(left, right):
 			counts[i] = 0
 	return result
 
+def frobenius_count(left, right):
+	n = len(right)
+	cache = [0]*(left + 1)
+	cache[0] = 1
+	for x in right:
+		for i in range(x, left + 1):
+			cache[i] += cache[i - x]
+	return cache[left]
+
 def from_base(digits, base):
 	integer = 0
 	for digit in digits:
@@ -1898,6 +1907,12 @@ atoms = {
 		ldepth = 0,
 		rdepth = 1,
 		call = frobenius_solve
+	),
+	'æf': attrdict(
+		arity = 2,
+		ldepth = 0,
+		rdepth = 1,
+		call = frobenius_count
 	),
 	'æḟ': attrdict(
 		arity = 2,
