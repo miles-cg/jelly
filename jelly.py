@@ -182,6 +182,7 @@ def flatten(argument):
 	return flat
 
 def frobenius_solve(left, right):
+	right = sorted(right, reverse=True)
 	n = len(right)
 	x = [0]*n
 	cache = {}
