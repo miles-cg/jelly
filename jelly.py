@@ -182,13 +182,18 @@ def flatten(argument):
 	return flat
 
 def frobenius_solve(left, right):
-	right = sorted(right, reverse=True)
 	n = len(right)
+	g = sorted(list(range(n)), key=lambda i: right[i], reverse=True)
+	h = sorted(list(range(n)), key=lambda i: g[i])
+	right = [right[i] for i in g]
+	r = [0]*n
+	for (i, x) in enumerate(g):
+		r[x] = n - 1 - i
 	x = [0]*n
 	cache = {}
 	def frobenius_inner(i, b):
 		if b == 0:
-			return [list(x)]
+			return [[x[j] for j in h]]
 		if i == n:
 			return []
 		key = (i, b)
