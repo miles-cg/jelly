@@ -183,24 +183,24 @@ def flatten(argument):
 
 def frobenius_solve(left, right):
 	n = len(right)
-	counts = [0]*n
-	total = 0
-	result = []
-	searching = True
-	while searching:
-		if total == left:
-			result.append(list(counts))
-		for i in range(n-1, -1, -1):
-			if total + right[i] <= left:
-				total += right[i]
-				counts[i] += 1
-				break
-			if i == 0:
-				searching = False
-				break
-			total -= right[i]*counts[i]
-			counts[i] = 0
-	return result
+	x = [0]*n
+	cache = {}
+	def frobenius_inner(i, b):
+		if b == 0:
+			return [list(x)]
+		if i == n:
+			return []
+		key = (i, b)
+		if key not in cache:
+			a = right[i]
+			result = []
+			for j in range(b // a + 1):
+				result.extend(frobenius_inner(i + 1, b - a*j))
+				x[i] += 1
+			x[i] = 0
+			cache[key] = result
+		return cache[key]
+	return frobenius_inner(0, left)
 
 def frobenius_count(left, right):
 	n = len(right)
