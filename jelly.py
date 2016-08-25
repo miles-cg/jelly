@@ -186,14 +186,10 @@ def frobenius_solve(left, right):
 	g = sorted(list(range(n)), key=lambda i: right[i], reverse=True)
 	h = sorted(list(range(n)), key=lambda i: g[i])
 	right = [right[i] for i in g]
-	r = [0]*n
-	for (i, x) in enumerate(g):
-		r[x] = n - 1 - i
-	x = [0]*n
 	cache = {}
 	def frobenius_inner(i, b):
 		if b == 0:
-			return [[x[j] for j in h]]
+			return [[]]
 		if i == n:
 			return []
 		key = (i, b)
@@ -201,12 +197,17 @@ def frobenius_solve(left, right):
 			a = right[i]
 			result = []
 			for j in range(b // a + 1):
-				result.extend(frobenius_inner(i + 1, b - a*j))
-				x[i] += 1
-			x[i] = 0
+				for x in frobenius_inner(i + 1, b - a*j):
+					y = [j]
+					y.extend(x)
+					result.append(y)
 			cache[key] = result
 		return cache[key]
-	return frobenius_inner(0, left)
+	result = frobenius_inner(0, left)
+	for x in result:
+		while len(x) < n:
+			x.append(0)
+	return [[x[i] for i in h] for x in result]
 
 def frobenius_count(left, right):
 	n = len(right)
