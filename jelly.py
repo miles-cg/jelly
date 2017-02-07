@@ -2,7 +2,7 @@ import cmath, copy, dictionary, fractions, functools, itertools, locale, math, n
 
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭụṿẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
-# Unused letters for single atoms: kquƁƇƊƑƘⱮƝƤƬƲȤɓɗƒɦƙɱɲƥʠɼʂƭʋȥẸẈẒĿṘẎŻẹḥḳṃṇọụṿẉỵẓḋėġŀṅẏ
+# Unused letters for single atoms: kquƁƇƑƘⱮƝƤƬƲȤɓɗƒɦƙɱɲƥʠɼʂƭʋȥẸẈẒĿṘẎŻẹḥḳṃṇọụṿẉỵẓḋėġŀṅẏ
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
@@ -737,6 +737,13 @@ def rotate_left(array, units):
 	array = iterable(array)
 	length = len(array)
 	return array[units % length :] + array[: units % length] if length else []
+
+def secant(x, link):
+	print(link)
+	h = x * 1e-3 + sys.float_info.epsilon
+	a = monadic_link(link, x-h)
+	b = monadic_link(link, x+h)
+	return (b - a) / (2*h)
 
 def shift_left(number, bits):
 	if type(number) == int and type(bits) == int:
@@ -2443,6 +2450,10 @@ hypers = {
 	'€': lambda link, none = None: attrdict(
 		arity = link.arity,
 		call = lambda x, y = None: [variadic_link(link, (t, y)) for t in iterable(x, make_range = True)]
+	),
+	'Ɗ': lambda link, none = None: attrdict(
+		arity = 1,
+		call = lambda x: secant(x, link)
 	),
 	'Þ': lambda link, none = None: attrdict(
 		arity = 1,
