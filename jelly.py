@@ -2408,6 +2408,20 @@ quicks = {
 		condition = lambda links: links and links[0].arity,
 		quicklink = reduce_cumulative
 	),
+	'Ƥ': attrdict(
+		condition = lambda links: links,
+		quicklink = lambda links, outmost_links, index: [attrdict(
+			arity = 1,
+			call = lambda t: (lambda z: [links[0].call(z[:i+1]) for i in range(len(z))])(iterable(t, make_range = True))
+		)]
+	),
+	'ÐƤ': attrdict(
+		condition = lambda links: links,
+		quicklink = lambda links, outmost_links, index: [attrdict(
+			arity = 1,
+			call = lambda t: (lambda z: [links[0].call(z[i:]) for i in range(len(z))])(iterable(t, make_range = True))
+		)]
+	),
 	'¤': attrdict(
 		condition = lambda links: len(links) > 1 and links[0].arity == 0,
 		quicklink = lambda links, outmost_links, index: [attrdict(
