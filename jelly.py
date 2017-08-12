@@ -736,6 +736,14 @@ def powerset(array):
 		ret += listify(itertools.combinations(array, t))
 	return ret
 
+def prefix_infix(links, outmost_links, index):
+	ret = [attrdict(arity = 1)]
+	if len(links) == 1:
+		ret[0].call = lambda z: [links[0].call(z[:i+1]) for i in range(len(z))]
+	else:
+		ret[0].call = lambda z: [links[0].call(t) for t in split_rolling(z, links[1].call())]
+	return ret
+
 def primerange(start, end):
 	if start > end:
 		return list(sympy.primerange(end, start + 1))[::-1]
@@ -2409,11 +2417,8 @@ quicks = {
 		quicklink = reduce_cumulative
 	),
 	'Ƥ': attrdict(
-		condition = lambda links: links,
-		quicklink = lambda links, outmost_links, index: [attrdict(
-			arity = 1,
-			call = lambda t: (lambda z: [links[0].call(z[:i+1]) for i in range(len(z))])(iterable(t, make_range = True))
-		)]
+		condition = lambda links: links and links[0].arity,
+		quicklink = prefix_infix
 	),
 	'ÐƤ': attrdict(
 		condition = lambda links: links,
