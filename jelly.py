@@ -865,6 +865,10 @@ def split_rolling(array, width):
 	array = iterable(array)
 	return [array[index : index + width] for index in range(len(array) - width + 1)]
 
+def split_outfix(array, width):
+	array = iterable(array)
+	return [array[:index] + array[index + width:] for index in range(len(array) - width + 1)]
+
 def sss(compressed):
 	decompressed = ''
 	integer = from_base([code_page.find(char) + 1 for char in compressed], 250)
@@ -900,6 +904,14 @@ def stringify(iterable, recurse = True):
 		return ''.join(map(str, iterable))
 	iterable = [stringify(item) for item in iterable]
 	return stringify(iterable, False) if recurse else iterable
+
+def suffix_outfix(links, outmost_links, index):
+	ret = [attrdict(arity = 1)]
+	if len(links) == 1:
+		ret[0].call = lambda z: [links[0].call(z[i:]) for i in range(len(z))]
+	else:
+		ret[0].call = lambda z: [links[0].call(t) for t in split_outfix(z, links[1].call())]
+	return ret
 
 def symmetric_mod(number, half_divisor):
 	modulus = number % (2 * half_divisor)
@@ -2421,11 +2433,8 @@ quicks = {
 		quicklink = prefix_infix
 	),
 	'ÐƤ': attrdict(
-		condition = lambda links: links,
-		quicklink = lambda links, outmost_links, index: [attrdict(
-			arity = 1,
-			call = lambda t: (lambda z: [links[0].call(z[i:]) for i in range(len(z))])(iterable(t, make_range = True))
-		)]
+		condition = lambda links: links and links[0].arity,
+		quicklink = suffix_outfix
 	),
 	'¤': attrdict(
 		condition = lambda links: len(links) > 1 and links[0].arity == 0,
