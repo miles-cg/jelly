@@ -736,12 +736,16 @@ def powerset(array):
 		ret += listify(itertools.combinations(array, t))
 	return ret
 
-def prefix_infix(links, outmost_links, index):
+def prefix(links, outmost_links, index):
 	ret = [attrdict(arity = 1)]
 	if len(links) == 1:
-		ret[0].call = lambda z: [links[0].call(z[:i+1]) for i in range(len(z))]
+		ret[0].call = lambda z: [links[0].call(t) for t in split_prefix(z)]
 	else:
-		ret[0].call = lambda z: [links[0].call(t) for t in split_rolling(z, links[1].call())]
+		width = links[1].call()
+		if width < 0:
+			ret[0].call = lambda z: [links[0].call(t) for t in split_rolling_out(z, abs(width))]
+		else:
+			ret[0].call = lambda z: [links[0].call(t) for t in split_rolling(z, width)]
 	return ret
 
 def primerange(start, end):
@@ -856,18 +860,30 @@ def split_fixed(array, width):
 	array = iterable(array)
 	return [array[index : index + width] for index in range(0, len(array), width)]
 
+def split_fixed_out(array, width):
+	array = iterable(array)
+	return [array[:index] + array[index + width:] for index in range(0, len(array), width)]
+
 def split_once(array, needle):
 	array = iterable(array, make_digits = True)
 	index = index_of(array, needle) or len(array)
 	return [array[0 : index - 1], array[index :]]
 
+def split_prefix(array):
+	array = iterable(array)
+	return [array[:index + 1] for index in range(len(array))]
+
 def split_rolling(array, width):
 	array = iterable(array)
 	return [array[index : index + width] for index in range(len(array) - width + 1)]
 
-def split_outfix(array, width):
+def split_rolling_out(array, width):
 	array = iterable(array)
 	return [array[:index] + array[index + width:] for index in range(len(array) - width + 1)]
+
+def split_suffix(array):
+	array = iterable(array)
+	return [array[index:] for index in range(len(array))]
 
 def sss(compressed):
 	decompressed = ''
@@ -905,12 +921,16 @@ def stringify(iterable, recurse = True):
 	iterable = [stringify(item) for item in iterable]
 	return stringify(iterable, False) if recurse else iterable
 
-def suffix_outfix(links, outmost_links, index):
+def suffix(links, outmost_links, index):
 	ret = [attrdict(arity = 1)]
 	if len(links) == 1:
-		ret[0].call = lambda z: [links[0].call(z[i:]) for i in range(len(z))]
+		ret[0].call = lambda z: [links[0].call(t) for t in split_suffix(z)]
 	else:
-		ret[0].call = lambda z: [links[0].call(t) for t in split_outfix(z, links[1].call())]
+		width = links[1].call()
+		if width < 0:
+			ret[0].call = lambda z: [links[0].call(t) for t in split_fixed_out(z, abs(width))]
+		else:
+			ret[0].call = lambda z: [links[0].call(t) for t in split_fixed(z, width)]
 	return ret
 
 def symmetric_mod(number, half_divisor):
@@ -2430,11 +2450,11 @@ quicks = {
 	),
 	'Ƥ': attrdict(
 		condition = lambda links: links and links[0].arity,
-		quicklink = prefix_infix
+		quicklink = prefix
 	),
 	'ÐƤ': attrdict(
 		condition = lambda links: links and links[0].arity,
-		quicklink = suffix_outfix
+		quicklink = suffix
 	),
 	'¤': attrdict(
 		condition = lambda links: len(links) > 1 and links[0].arity == 0,
