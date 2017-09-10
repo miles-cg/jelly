@@ -328,6 +328,14 @@ def index_of(haystack, needle):
 			return 1 + index
 	return 0
 
+def interval_index(intervals, item):
+	index = 1
+	for end in intervals:
+		if item <= end:
+			return index
+		index += 1
+	return index
+
 def isqrt(number):
 	a = number
 	b = (a + 1) // 2
@@ -2244,6 +2252,11 @@ atoms = {
 		ldepth = 0,
 		rdepth = 0,
 		call = modinv
+	),
+	'œi': attrdict(
+		arity = 2,
+		rdepth = 0,
+		call = interval_index
 	),
 	'æl': attrdict(
 		arity = 2,
