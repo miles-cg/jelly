@@ -973,6 +973,17 @@ def symmetric_mod(number, half_divisor):
 	modulus = number % (2 * half_divisor)
 	return modulus - 2 * half_divisor * (modulus > half_divisor)
 
+def tie(links, outmost_links, index):
+	ret = [attrdict(arity=links[0].arity)]
+	n = 2 if links[-1].arity else links[-1].call()
+	i = [0]
+	def _tie():
+		r = links[i[0]]
+		i[0] = (i[0] + 1) % n
+		return r
+	ret[0].call = lambda x = None, y = None: variadic_link(_tie(), (x, y))
+	return ret
+
 def time_format(bitfield):
 	time_string = ':'.join(['%H'] * (bitfield & 4 > 0) + ['%M'] * (bitfield & 2 > 0) + ['%S'] * (bitfield & 1 > 0))
 	return list(time.strftime(time_string))
@@ -2517,6 +2528,12 @@ quicks = {
 			arity = 2,
 			call = lambda x, y: [monadic_link(links[0], g) for g in split_key(iterable(x, make_digits = True), iterable(y, make_digits = True))]
 		)]
+	),
+	'ƭ': attrdict(
+		condition = lambda links: links and (
+			(links[-1].arity == 0 and len(links) - 1 == links[-1].call()) or
+			(links[-1].arity and len(links) == 2)),
+		quicklink = tie
 	),
 	'¤': attrdict(
 		condition = lambda links: len(links) > 1 and links[0].arity == 0,
