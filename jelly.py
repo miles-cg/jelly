@@ -974,14 +974,15 @@ def symmetric_mod(number, half_divisor):
 	return modulus - 2 * half_divisor * (modulus > half_divisor)
 
 def tie(links, outmost_links, index):
-	ret = [attrdict(arity=links[0].arity)]
+	ret = [attrdict(arity=max(link.arity for link in links))]
 	n = 2 if links[-1].arity else links[-1].call()
-	i = [0]
-	def _tie():
-		r = links[i[0]]
-		i[0] = (i[0] + 1) % n
-		return r
-	ret[0].call = lambda x = None, y = None: variadic_link(_tie(), (x, y))
+	def _make_tie():
+		i = 0
+		while True:
+			yield links[i]
+			i = (i + 1) % n
+	cycle = _make_tie()
+	ret[0].call = lambda x = None, y = None: variadic_link(next(cycle), (x, y))
 	return ret
 
 def time_format(bitfield):
