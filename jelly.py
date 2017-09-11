@@ -3,7 +3,7 @@ import cmath, collections, copy, dictionary, fractions, functools, itertools, lo
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭụṿẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
 
-# Unused letters for single atoms: kquƁƇƊƑƘⱮƝƬƲȤɗƒɦɱɲƥʠɼʂƭʋȥẈẒŻẹḥḳṇụṿẉỵẓḋėġṅẏ
+# Unused letters for single atoms: kquƁƇƊƑƘⱮƝƬƲȤɗƒɦɱɲƥʠɼʂʋȥẈẒŻẹḥḳṇụṿẉỵẓḋėġṅẏ
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
