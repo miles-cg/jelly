@@ -974,7 +974,7 @@ def symmetric_mod(number, half_divisor):
 	return modulus - 2 * half_divisor * (modulus > half_divisor)
 
 def tie(links, outmost_links, index):
-	ret = [attrdict(arity=max(link.arity for link in links))]
+	ret = [attrdict(arity=2 if max(link.arity for link in links) == 2 else 1)]
 	n = 2 if links[-1].arity else links[-1].call()
 	def _make_tie():
 		i = 0
