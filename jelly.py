@@ -737,15 +737,15 @@ def powerset(array):
 	return ret
 
 def prefix(links, outmost_links, index):
-	ret = [attrdict(arity = 1)]
+	ret = [attrdict(arity=links[0].arity)]
 	if len(links) == 1:
-		ret[0].call = lambda z: [monadic_link(links[0], t) for t in split_prefix(z)]
+		ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_prefix(x)]
 	else:
 		width = links[1].call()
 		if width < 0:
-			ret[0].call = lambda z: [monadic_link(links[0], t) for t in split_rolling_out(z, abs(width))]
+			ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_rolling_out(x, abs(width))]
 		else:
-			ret[0].call = lambda z: [monadic_link(links[0], t) for t in split_rolling(z, width)]
+			ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_rolling(x, width)]
 	return ret
 
 def primerange(start, end):
@@ -922,15 +922,15 @@ def stringify(iterable, recurse = True):
 	return stringify(iterable, False) if recurse else iterable
 
 def suffix(links, outmost_links, index):
-	ret = [attrdict(arity = 1)]
+	ret = [attrdict(arity=links[0].arity)]
 	if len(links) == 1:
-		ret[0].call = lambda z: [monadic_link(links[0], t) for t in split_suffix(z)]
+		ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_suffix(x)]
 	else:
 		width = links[1].call()
 		if width < 0:
-			ret[0].call = lambda z: [monadic_link(links[0], t) for t in split_fixed_out(z, abs(width))]
+			ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_fixed_out(x, abs(width))]
 		else:
-			ret[0].call = lambda z: [monadic_link(links[0], t) for t in split_fixed(z, width)]
+			ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_fixed(x, width)]
 	return ret
 
 def symmetric_mod(number, half_divisor):
