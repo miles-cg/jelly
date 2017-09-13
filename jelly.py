@@ -1,8 +1,9 @@
-import cmath, copy, dictionary, fractions, functools, itertools, locale, math, numpy, operator, parser, random, re, sympy, sys, time, urllib.request
+import cmath, collections, copy, dictionary, fractions, functools, itertools, locale, math, numpy, operator, parser, random, re, sympy, sys, time, urllib.request
 
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭụṿẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
-# Unused letters for single atoms: kquƁƇƊƑƘⱮƝƤƬƲȤɗƒɦƙɱɲƥʠɼʂƭʋȥẸẈẒĿṘẎŻẹḥḳṇọụṿẉỵẓḋėġŀṅẏ
+
+# Unused letters for single atoms: kquƁƇƊƑƘⱮƝƬƲȤɗƒɦɱɲƥʠɼʂʋȥẈẒŻẹḥḳṇụṿẉỵẓḋėġṅẏ
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
@@ -445,6 +446,25 @@ def maximal_indices(iterable):
 	maximum = max(iterable)
 	return [u + 1 for u, v in enumerate(iterable) if v == maximum]
 
+def median(array):
+	array = sorted(array)
+	return div(array[(len(array) - 1) // 2] + array[len(array) // 2], 2)
+
+def mode(array):
+	frequencies = collections.defaultdict(lambda: 0)
+	maxfreq = 0
+	retval = []
+	for element in array:
+		string = repr(element)
+		frequencies[string] += 1
+		maxfreq = max(frequencies[string], maxfreq)
+	for element in array:
+		string = repr(element)
+		if frequencies[string] == maxfreq:
+			retval.append(element)
+			frequencies[string] = 0
+	return retval
+
 def modinv(a, m):
     i, _, g = sympy.numbers.igcdex(a, m)
     return i % m if g == 1 else 0
@@ -864,6 +884,22 @@ def split_fixed_out(array, width):
 	array = iterable(array)
 	return [array[:index] + array[index + width:] for index in range(0, len(array), width)]
 
+def split_key(control, data):
+	groups = {}
+	order = []
+	count = 0
+	for key, item in zip(control, data):
+		key = repr(key) if type(key) == list else key
+		if key not in groups:
+			order.append(key)
+			groups[key] = []
+		groups[key].append(item)
+		count += 1
+	result = [groups[key] for key in order]
+	if count < len(data):
+		result.append(data[count:])
+	return result
+
 def split_once(array, needle):
 	array = iterable(array, make_digits = True)
 	index = index_of(array, needle) or len(array)
@@ -936,6 +972,18 @@ def suffix(links, outmost_links, index):
 def symmetric_mod(number, half_divisor):
 	modulus = number % (2 * half_divisor)
 	return modulus - 2 * half_divisor * (modulus > half_divisor)
+
+def tie(links, outmost_links, index):
+	ret = [attrdict(arity=2 if max(link.arity for link in links) == 2 else 1)]
+	n = 2 if links[-1].arity else links[-1].call()
+	def _make_tie():
+		i = 0
+		while True:
+			yield links[i]
+			i = (i + 1) % n
+	cycle = _make_tie()
+	ret[0].call = lambda x = None, y = None: variadic_link(next(cycle), (x, y))
+	return ret
 
 def time_format(bitfield):
 	time_string = ':'.join(['%H'] * (bitfield & 4 > 0) + ['%M'] * (bitfield & 2 > 0) + ['%S'] * (bitfield & 1 > 0))
@@ -1272,6 +1320,10 @@ atoms = {
 	'E': attrdict(
 		arity = 1,
 		call = equal
+	),
+	'Ẹ': attrdict(
+		arity = 1,
+		call = lambda z: int(any(iterable(z)))
 	),
 	'Ė': attrdict(
 		arity = 1,
@@ -1908,6 +1960,21 @@ atoms = {
 		ldepth = 0,
 		call = lambda z: overload((math.log, cmath.log), z)
 	),
+	'Æm': attrdict(
+		arity = 1,
+		ldepth = 1,
+		call = lambda z: div(sum(z), len(z))
+	),
+	'Æṁ': attrdict(
+		arity = 1,
+		ldepth = 1,
+		call = median
+	),
+	'Æṃ': attrdict(
+		arity = 1,
+		ldepth = 1,
+		call = mode
+	),
 	'ÆN': attrdict(
 		arity = 1,
 		ldepth = 0,
@@ -2455,6 +2522,19 @@ quicks = {
 	'ÐƤ': attrdict(
 		condition = lambda links: links and links[0].arity,
 		quicklink = suffix
+	),
+	'ƙ': attrdict(
+		condition = lambda links: links and links[0].arity,
+		quicklink = lambda links, outmost_links, index: [attrdict(
+			arity = 2,
+			call = lambda x, y: [monadic_link(links[0], g) for g in split_key(iterable(x, make_digits = True), iterable(y, make_digits = True))]
+		)]
+	),
+	'ƭ': attrdict(
+		condition = lambda links: links and (
+			(links[-1].arity == 0 and len(links) - 1 == links[-1].call()) or
+			(links[-1].arity and len(links) == 2)),
+		quicklink = tie
 	),
 	'¤': attrdict(
 		condition = lambda links: len(links) > 1 and links[0].arity == 0,
