@@ -759,13 +759,13 @@ def powerset(array):
 def prefix(links, outmost_links, index):
 	ret = [attrdict(arity=links[0].arity)]
 	if len(links) == 1:
-		ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_prefix(x)]
+		ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_prefix(iterable(x, make_range = True))]
 	else:
 		width = links[1].call()
 		if width < 0:
-			ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_rolling_out(x, abs(width))]
+			ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_rolling_out(iterable(x, make_range = True), abs(width))]
 		else:
-			ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_rolling(x, width)]
+			ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_rolling(iterable(x, make_range = True), width)]
 	return ret
 
 def primerange(start, end):
@@ -960,13 +960,13 @@ def stringify(iterable, recurse = True):
 def suffix(links, outmost_links, index):
 	ret = [attrdict(arity=links[0].arity)]
 	if len(links) == 1:
-		ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_suffix(x)]
+		ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_suffix(iterable(x, make_range = True))]
 	else:
 		width = links[1].call()
 		if width < 0:
-			ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_fixed_out(x, abs(width))]
+			ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_fixed_out(iterable(x, make_range = True), abs(width))]
 		else:
-			ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_fixed(x, width)]
+			ret[0].call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in split_fixed(iterable(x, make_range = True), width)]
 	return ret
 
 def symmetric_mod(number, half_divisor):
