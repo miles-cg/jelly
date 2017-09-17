@@ -225,6 +225,14 @@ def from_base(digits, base):
 		integer = base * integer + digit
 	return integer
 
+def from_mixed_base(digits, base):
+	weight = 1
+	result = 0
+	for i in range(len(digits)):
+		result += digits[~i] * weight
+		weight *= base[~i]
+	return result
+
 def from_diagonals(diagonals):
 	upper_right = 1
 	while len(diagonals[upper_right - 1]) > 1:
@@ -2247,6 +2255,12 @@ atoms = {
 		ldepth = 0,
 		rdepth = 0,
 		call = math.atan2
+	),
+	'æḅ': attrdict(
+		arity = 2,
+		ldepth = 1,
+		rdepth = 1,
+		call = from_mixed_base
 	),
 	'æR': attrdict(
 		arity = 2,
