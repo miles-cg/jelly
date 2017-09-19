@@ -329,6 +329,10 @@ def index_of(haystack, needle):
 			return 1 + index
 	return 0
 
+def integer_partition(n):
+	from sympy.solvers.diophantine import partition
+	return list(map(list, partition(n)))
+
 def isqrt(number):
 	a = number
 	b = (a + 1) // 2
@@ -619,13 +623,6 @@ def overload(operators, *args):
 			pass
 		else:
 			return ret
-
-def integer_partitions(n, I=1):
-	result = [[n,]]
-	for i in range(I, n//2 + 1):
-		for p in integer_partitions(n-i, i):
-			result.append([i,] + p)
-	return result
 
 def partitions(array):
 	array = iterable(array, make_digits = True)
@@ -2002,6 +1999,11 @@ atoms = {
 		ldepth = 0,
 		call = sympy.ntheory.generate.prevprime
 	),
+	'ÆṖ': attrdict(
+		arity = 1,
+		ldepth = 0,
+		call = integer_partition
+	),
 	'ÆR': attrdict(
 		arity = 1,
 		ldepth = 0,
@@ -2164,11 +2166,6 @@ atoms = {
 	'ŒṖ': attrdict(
 		arity = 1,
 		call = partitions
-	),
-	'Œṗ': attrdict(
-		arity = 1,
-		ldepth = 0,
-		call = lambda z: sorted(integer_partitions(z), key = len, reverse = True)
 	),
 	'Œp': attrdict(
 		arity = 1,
