@@ -710,7 +710,7 @@ def partition_at(booleans, array, keep_border = True):
 		index += 1
 	return chunks + [chunk]
 
-def pemutation_at_index(index, array = None):
+def permutation_at_index(index, array = None):
 	result = []
 	if array is None:
 		divisor = 1
@@ -745,6 +745,20 @@ def permutation_index(array):
 			factor = functools.reduce(operator.mul, range(1, length - index), 1)
 		result += k * factor
 	return result
+
+def permutation_to_cycles(p):
+	q = set(p)
+	r = []
+	while q:
+		c = min(q)
+		q.remove(c)
+		v = [c]
+		while p[c-1] not in v:
+			c = p[c-1]
+			v.append(c)
+			q.remove(c)
+		r.append(v)
+	return r
 
 def Pi(number):
 	if type(number) == int:
@@ -2099,7 +2113,7 @@ atoms = {
 	'Œ?': attrdict(
 		arity = 1,
 		ldepth = 0,
-		call = pemutation_at_index
+		call = permutation_at_index
 	),
 	'Œ¿': attrdict(
 		arity = 1,
@@ -2117,6 +2131,11 @@ atoms = {
 	'ŒḂ': attrdict(
 		arity = 1,
 		call = is_palindrome
+	),
+	'ŒC': attrdict(
+			arity = 1,
+			ldepth = 1,
+			call = permutation_to_cycles
 	),
 	'Œc': attrdict(
 		arity = 1,
@@ -2224,7 +2243,7 @@ atoms = {
 	'œ?': attrdict(
 		arity = 2,
 		ldepth = 0,
-		call = pemutation_at_index
+		call = permutation_at_index
 	),
 	'œ¿': attrdict(
 		arity = 2,
