@@ -974,14 +974,8 @@ def symmetric_mod(number, half_divisor):
 	return modulus - 2 * half_divisor * (modulus > half_divisor)
 
 def tie(links, outmost_links, index):
-	ret = [attrdict(arity=2 if max(link.arity for link in links) == 2 else 1)]
-	n = 2 if links[-1].arity else links[-1].call()
-	def _make_tie():
-		i = 0
-		while True:
-			yield links[i]
-			i = (i + 1) % n
-	cycle = _make_tie()
+	ret = [attrdict(arity=2 if max_arity(links) == 2 else 1)]
+	cycle = itertools.cycle(links if links[-1].arity else links[:-1])
 	ret[0].call = lambda x = None, y = None: variadic_link(next(cycle), (x, y))
 	return ret
 
