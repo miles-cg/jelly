@@ -1985,6 +1985,11 @@ atoms = {
 		ldepth = 0,
 		call = lambda z: int(sympy.functions.combinatorial.numbers.fibonacci(z))
 	),
+	'Æj': attrdict(
+		arity = 1,
+		ldepth = 0,
+		call = lambda z: [z.real, z.imag]
+	),
 	'ÆĿ': attrdict(
 		arity = 1,
 		ldepth = 0,
@@ -2322,6 +2327,12 @@ atoms = {
 		ldepth = 0,
 		rdepth = 0,
 		call = modinv
+	),
+	'æj': attrdict(
+		arity = 2,
+		ldepth = 0,
+		rdepth = 0,
+		call = complex
 	),
 	'æl': attrdict(
 		arity = 2,
