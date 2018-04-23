@@ -409,6 +409,13 @@ def join(array, glue):
 		ret += iterable(item) + glue
 	return ret + iterable(last)
 
+def laplace(z, u, v):
+	n = len(z)
+	if n == 1:
+		return z[0][0]
+	p = list(zip(*z[1:]))
+	return monadic_link(u, [dyadic_link(v, (z[0][index], laplace(list(zip(*(p[:index] + p[index+1:]))), u, v))) for index in range(n)])
+
 def last_input():
 	if len(sys.argv) > 3:
 		return python_eval(sys.argv[-1])
@@ -829,9 +836,21 @@ def reduce(links, outmost_links, index):
 		ret[0].call = lambda z: [reduce_simple(t, links[0]) for t in split_fixed(iterable(z), links[1].call())]
 	return ret
 
+def reduce_right(links, outmost_links, index):
+	ret = [attrdict(arity = 1)]
+	if len(links) == 1:
+		ret[0].call = lambda z: reduce_right_simple(z, links[0])
+	else:
+		ret[0].call = lambda z: [reduce_right_simple(t, links[0]) for t in split_fixed(iterable(z), links[1].call())]
+	return ret
+
 def reduce_simple(array, link):
 	array = iterable(array)
 	return functools.reduce(lambda x, y: dyadic_link(link, (x, y)), array)
+
+def reduce_right_simple(array, link):
+	array = reversed(iterable(array))
+	return functools.reduce(lambda x, y: dyadic_link(link, (y, x)), array)
 
 def reduce_cumulative(links, outmost_links, index):
 	ret = [attrdict(arity = 1)]
@@ -2655,6 +2674,17 @@ quicks = {
 		quicklink = lambda links, outmost_links, index: [attrdict(
 			arity = max(link.arity for link in links),
 			call = lambda x = None, y = None: while_loop(links[0], links[1], (x, y), cumulative = True)
+		)]
+	),
+	'Ð/': attrdict(
+		condition = lambda links: links and links[0].arity,
+		quicklink = reduce_right
+	),
+	'ÐƊ': attrdict(
+		condition = lambda links: len(links) == 2,
+		quicklink = lambda links, outmost_liks, index: [attrdict(
+			arity = 1,
+			call = lambda z: laplace(z, links[0], links[1])
 		)]
 	),
 	'Ðf': attrdict(
